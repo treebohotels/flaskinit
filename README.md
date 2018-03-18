@@ -10,3 +10,7 @@ optional arguments:
   -p PATH             Root directory of your application, if not provided
                       defaults to current working directory
   -a APPS [APPS ...]  List of apps to be created within your application
+
+Example:
+
+flaskinit -n test -a app1 app2 -p /root/path/location
