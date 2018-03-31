@@ -1,11 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='flaskinit',
     version='0.1.0',
     description='A skeleton project structure for flask apps',
     url='https://github.com/treebohotels/flaskinit.git',
-    packages=['flaskinit'],
+    packages=find_packages(),
     author='Sohit kumar',
     author_email='sumitk002@gmail.com',
     license='UNLICENSE',

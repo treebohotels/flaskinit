@@ -1,7 +1,7 @@
 import argparse
-import os
 
-from flaskinit import config
+import os
+import shutil
 
 
 def create_flask_app(root_directory, app_list):
@@ -15,70 +15,36 @@ def create_flask_app(root_directory, app_list):
     if not os.path.exists(root_directory):
         os.makedirs(root_directory)
 
-    # Creating directories
-    create_directories(root_directory,
-                       config.DIRECTORIES['COMMON_DIRECTORIES'])
+    current_path = os.path.abspath(os.path.dirname(__file__))
 
+    # path to project_structue of sample flask application
+    project_structure_path = os.path.join(current_path,
+                                          "../project_structure/")
+
+    # path to app_structure stores the directory structure of domain specific
+    # apps ,all apps will have similar structure as app_structure
+    app_structure_path = os.path.join(current_path,
+                                      "../project_structure/app_structure")
+
+    # Copy common directories from project_structure
+    copytree(project_structure_path, root_directory)
+    shutil.rmtree(root_directory + '/app_structure')
+
+    # Copy app directories from app_structure
     for app in app_list:
-        create_directories('{}/{}'.format(root_directory, app),
-                           config.DIRECTORIES['APP_DIRECTORIES'])
-
-    # Creating files within  directories
-    create_requirement_files('{}/{}'.format(root_directory,
-                                            config.DIRECTORIES[
-                                                'COMMON_DIRECTORIES'][
-                                                'REQUIREMENTS_DIR']))
-    create_app_file('{}/{}'.format(root_directory,
-                                   config.DIRECTORIES[
-                                       'COMMON_DIRECTORIES'][
-                                       'APP_DIR']))
+        app_dir_path = '{}/{}'.format(root_directory, app)
+        copytree(app_structure_path, app_dir_path)
 
 
-def create_directories(root_directory, directory_map):
-    for key, value in directory_map.items():
-        if not os.path.exists(root_directory + value):
-            os.makedirs(root_directory + value)
-
-
-def touch(path):
-    with open(path, 'a'):
-        os.utime(path, None)
-
-
-def create_requirement_files(path):
-    """
-    creates requirements files(base,local,prod) in requirement directory
-    :param path:
-    :return:
-    """
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-
-    file_names = ['base.txt', 'local.txt', 'prod.txt', 'staging.txt']
-    for file_name in file_names:
-        file_path = path + file_name
-        if not os.path.isfile(file_path):
-            touch(file_path)
-
-
-def create_app_file(path):
-    """
-    :param directory: creates app.py in a given directory location
-    :return:
-    """
-
-    file_path = path + 'app.py'
-    if not os.path.isfile(file_path):
-        f = open(file_path, 'w')
-        f.write('from flask import Flask\n\n')
-        f.write('app = Flask(__name__)\n\n')
-        f.write('@app.route(\'/\')\n')
-        f.write('def hello_world():\n')
-        f.write('\treturn \'Hello World!\'\n\n')
-        f.write('if __name__ == \'__main__\':\n')
-        f.write('\tapp.run()\n')
-        f.close()
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            if not os.path.exists(d):
+                shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
 
 
 def create_app():
@@ -96,7 +62,7 @@ def create_app():
 
     parser.add_argument('-p', dest='path',
                         help='Root directory of your application, '
-                             'if not provided defaults'
+                             'if not provided defaults '
                              'to current working directory ')
 
     parser.add_argument('-a', dest='apps', nargs='+',
@@ -115,3 +81,7 @@ def create_app():
         create_flask_app('{}/{}'.format(os.getcwd(), name), apps)
     else:
         create_flask_app(path + name, apps)
+
+
+if __name__ == '__main__':
+    create_flask_app('/Users/sohitkumar/code/', ['hello', 'hello1'])
