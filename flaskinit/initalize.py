@@ -43,6 +43,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
         if os.path.isdir(s):
             if not os.path.exists(d):
                 shutil.copytree(s, d, symlinks, ignore)
+                copytree(s,d)
         else:
             shutil.copy2(s, d)
 

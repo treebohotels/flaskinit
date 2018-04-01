@@ -1,0 +1,82 @@
+version: '2.1'
+services:
+  app:
+    extends:
+      file: docker-base.yml
+      service: app
+    depends_on:
+      database:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+  hms_consumer:
+     extends:
+        file: docker-base.yml
+        service: hms_consumer
+     depends_on:
+       rabbitMq:
+        condition: service_healthy
+
+  database:
+    image: postgres:9.6.5
+    container_name: ${SERVICE}_db
+    ports:
+      - ${DB_PORT}:5432
+#    volumes:
+#      - ./../../data/backup.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      webnet:
+        aliases:
+          - ${SERVICE}_database
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      PGDATA: ${PGDATA}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 15s
+      retries: 3
+  mongodb:
+    image: mongo:latest
+    container_name: ${SERVICE}_mongodb
+    environment:
+      - MONGODB_USERNAME=$SERVICE
+      - MONGODB_PASSWORD=$SERVICE
+      - MONGODB_DATABASE=$SERVICE
+    volumes:
+        - ${MONGODB_DATA_PATH}:/data/db
+    networks:
+      webnet:
+        aliases:
+          - ${SERVICE}_mongo
+    ports:
+            - ${MONGODB_PORT}:27017
+    command: mongod --smallfiles --logpath=/dev/null
+    healthcheck:
+      test: echo 'db.stats().ok' | mongo localhost:27017/zenbrain --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  rabbitMq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - ${RMQ_PORT}:5672
+    environment:
+      RABBITMQ_DEFAULT_PASS: ${SERVICE}
+      RABBITMQ_DEFAULT_USER: ${SERVICE}
+    networks:
+      webnet:
+        aliases:
+          - ${SERVICE}_queue
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "node_health_check"]
+      interval: 3s
+      timeout: 15s
+      retries: 5
+
+
+networks:
+  webnet:

@@ -1,0 +1,25 @@
+secgroup = create securitygroup vpc={vpc_id} description={description} name={group_name}
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.37.208/32 portrange=80
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.37.208/32 portrange=443
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.64.153/32 portrange=80
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.64.153/32 portrange=443
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=111.93.154.2/32 portrange=80
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=111.93.154.2/32 portrange=443
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=118.185.243.162/32 portrange=80
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=118.185.243.162/32 portrange=443
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=192.168.0.0/16 portrange=80
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=192.168.0.0/16 portrange=443
+
+
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=192.168.0.0/16 portrange=5500
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=118.185.243.162/32 portrange=5500
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=111.93.154.2/32 portrange=5500
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.64.153/32 portrange=5500
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.37.208/32 portrange=5500
+
+
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=192.168.0.0/16 portrange=5520
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=118.185.243.162/32 portrange=5520
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=111.93.154.2/32 portrange=5520
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.64.153/32 portrange=5520
+update securitygroup id=$secgroup inbound=authorize protocol=tcp cidr=106.51.37.208/32 portrange=5520

@@ -1,0 +1,35 @@
+version: '2.1'
+services:
+  app:
+    image: ${DOCKER_REPOSITORY}/${APP}:${VERSION}
+    container_name: ${SERVICE}_app
+    ports:
+      - ${APP_PORT}:8001
+    networks:
+      - webnet
+    command: /usr/src/app/feedback/gunicorn_start
+    volumes:
+      - ${HOST_LOG_ROOT}:${LOG_ROOT}
+    env_file:
+      - ${APP_COMMON_ENV_PATH}
+      - ${APP_ENV_PATH}
+    environment:
+      LOG_ROOT: ${LOG_ROOT}
+  hms_consumer:
+    image: ${DOCKER_REPOSITORY}/${APP}:${VERSION}
+    container_name: ${SERVICE}_hms_consumer
+    ports:
+      - ${HMS_CONSUMER_PORT}:8001
+    networks:
+      - webnet
+    command: /usr/src/app/feedback/hms_consumer.sh
+    volumes:
+      - ${HOST_LOG_ROOT}:${LOG_ROOT}
+    env_file:
+      - ${APP_COMMON_ENV_PATH}
+      - ${APP_ENV_PATH}
+    environment:
+      LOG_ROOT: ${LOG_ROOT}
+
+networks:
+  webnet:
